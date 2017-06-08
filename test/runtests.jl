@@ -1,3 +1,4 @@
+using FileIO
 using FeatherFiles
 using IterableTables
 using DataFrames
@@ -7,7 +8,7 @@ using Base.Test
 
 df = DataFrame(Name=["John", "Sally", "Jim"], Age=[34.,54.,23],Children=[2,1,0])
 
-output_filename = tempname()
+output_filename = tempname() * ".feather"
 
 df |> save(output_filename)
 
