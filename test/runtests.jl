@@ -16,4 +16,8 @@ df2 = load(output_filename) |> DataFrame
 
 @test df == df2
 
+featherfile = load(output_filename)
+
+@test isiterable(featherfile) == true
+
 end
