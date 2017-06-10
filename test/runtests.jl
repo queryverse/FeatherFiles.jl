@@ -12,12 +12,17 @@ output_filename = tempname() * ".feather"
 
 df |> save(output_filename)
 
-df2 = load(output_filename) |> DataFrame
+try
+    df2 = load(output_filename) |> DataFrame
 
-@test df == df2
+    @test df == df2
 
-featherfile = load(output_filename)
+    featherfile = load(output_filename)
 
-@test isiterable(featherfile) == true
+    @test isiterable(featherfile) == true
+finally
+    gc()
+    rm(output_filename)
+end
 
 end
