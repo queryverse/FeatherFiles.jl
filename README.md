@@ -8,8 +8,8 @@
 
 ## Overview
 
-This package provides load and save support for Feather Files under the
-[FileIO.jl](https://github.com/JuliaIO/FileIO.jl) package.
+This package provides load and save support for [Feather files](https://github.com/wesm/feather)
+under the [FileIO.jl](https://github.com/JuliaIO/FileIO.jl) package.
 
 ## Installation
 
