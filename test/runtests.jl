@@ -1,4 +1,5 @@
 using FileIO
+using TableTraits
 using FeatherFiles
 using IterableTables
 using DataFrames

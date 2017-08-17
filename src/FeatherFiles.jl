@@ -1,6 +1,6 @@
 module FeatherFiles
 
-using Feather, IterableTables, DataValues, DataTables
+using Feather, TableTraits, IterableTables, DataValues, DataTables
 import FileIO
 
 struct FeatherFile
@@ -11,10 +11,10 @@ function load(f::FileIO.File{FileIO.format"Feather"})
     return FeatherFile(f.filename)
 end
 
-IterableTables.isiterable(x::FeatherFile) = true
-IterableTables.isiterabletable(x::FeatherFile) = true
+TableTraits.isiterable(x::FeatherFile) = true
+TableTraits.isiterabletable(x::FeatherFile) = true
 
-function IterableTables.getiterator(file::FeatherFile)
+function TableTraits.getiterator(file::FeatherFile)
     dt = Feather.read(file.filename, DataTable)
 
     it = getiterator(dt)
