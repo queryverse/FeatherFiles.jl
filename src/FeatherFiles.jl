@@ -1,7 +1,8 @@
 module FeatherFiles
 
-using Feather, TableTraits, IterableTables, DataValues, DataTables
-import FileIO
+using FeatherLib, IteratorInterfaceExtensions, TableTraits, TableTraitsUtils,
+    DataValues, NamedTuples, Arrow, Missings
+import IterableTables, FileIO
 
 struct FeatherFile
     filename::String
@@ -11,29 +12,32 @@ function load(f::FileIO.File{FileIO.format"Feather"})
     return FeatherFile(f.filename)
 end
 
-TableTraits.isiterable(x::FeatherFile) = true
+IteratorInterfaceExtensions.isiterable(x::FeatherFile) = true
 TableTraits.isiterabletable(x::FeatherFile) = true
+TableTraits.supports_get_columns_view(x::FeatherFile) = true
 
-function TableTraits.getiterator(file::FeatherFile)
-    dt = Feather.read(file.filename, DataTable)
+function IteratorInterfaceExtensions.getiterator(file::FeatherFile)
+    rs = featherread(file.filename)
 
-    it = getiterator(dt)
+    it = create_tableiterator(rs.columns, rs.names)
 
     return it
+end
+
+function get_columns_view(file::FeatherFile)
+    rs = featherread(file.filename)
+
+    T = eval(:(@NT($(Symbol.(rs.names)...)))){typeof.(rs.columns)...}
+
+    return T(rs.columns)
 end
 
 function save(f::FileIO.File{FileIO.format"Feather"}, data)
     isiterabletable(data) || error("Can't write this data to a Feather file.")
 
-    it = getiterator(data)
+    columns, colnames = create_columns_from_iterabletable(data)
 
-    ds = IterableTables.get_datastreams_source(it)
-    try
-        Feather.write(f.filename, ds)
-    finally
-        Data.close!(ds)
-    end
+    featherwrite(f.filename, columns, colnames)
 end
-
 
 end # module
