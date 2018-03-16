@@ -4,6 +4,8 @@ using FeatherLib, IteratorInterfaceExtensions, TableTraits, TableTraitsUtils,
     DataValues, NamedTuples, Arrow, Missings
 import IterableTables, FileIO
 
+include("missing-conversion.jl")
+
 struct FeatherFile
     filename::String
 end
@@ -19,23 +21,46 @@ TableTraits.supports_get_columns_view(x::FeatherFile) = true
 function IteratorInterfaceExtensions.getiterator(file::FeatherFile)
     rs = featherread(file.filename)
 
+    for i=1:length(rs.columns)
+        col_eltype = eltype(rs.columns[i])
+        if isa(col_eltype, Union) && col_eltype.b <: Missing
+            T = DataValueArrowVector{col_eltype.a,typeof(rs.columns[i])}
+            rs.columns[i] = T(rs.columns[i])
+        end
+    end
+
     it = create_tableiterator(rs.columns, rs.names)
 
     return it
 end
 
-function get_columns_view(file::FeatherFile)
+function TableTraits.get_columns_view(file::FeatherFile)
     rs = featherread(file.filename)
+
+    for i=1:length(rs.columns)
+        col_eltype = eltype(rs.columns[i])
+        if isa(col_eltype, Union) && col_eltype.b <: Missing
+            T = DataValueArrowVector{col_eltype.a,typeof(rs.columns[i])}
+            rs.columns[i] = T(rs.columns[i])
+        end
+    end    
 
     T = eval(:(@NT($(Symbol.(rs.names)...)))){typeof.(rs.columns)...}
 
-    return T(rs.columns)
+    return T(rs.columns...)
 end
 
 function save(f::FileIO.File{FileIO.format"Feather"}, data)
     isiterabletable(data) || error("Can't write this data to a Feather file.")
 
     columns, colnames = create_columns_from_iterabletable(data)
+
+    for i=1:length(columns)
+        if eltype(columns[i]) <: DataValue
+            T = MissingDataValueVector{eltype(eltype(columns[i])),typeof(columns[i])}
+            columns[i] = T(columns[i])
+        end
+    end
 
     featherwrite(f.filename, columns, colnames)
 end

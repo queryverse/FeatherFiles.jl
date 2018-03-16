@@ -1,15 +1,30 @@
-struct DataValueArrowVector{J}
-    data::Arrow.ArrowVector{Union{J,Missing}}
+struct DataValueArrowVector{J,T<:Arrow.ArrowVector{Union{J,Missing}}} <: AbstractVector{DataValue{J}}
+    data::T
 end
 
 Base.size(A::DataValueArrowVector) = size(A.data)
 
-@inline function Base.getindex(A::DataValueArrowVector{Union{J,Missing}}) where J
-    @boundscheck checkbounds(A, i)
-    @inbounds o = Arrow.unsafe_isnull(A, i) ? DataValue{J}() : DataValue{J}(unsafe_getvalue(A, i))
+@inline function Base.getindex(A::DataValueArrowVector{J,T}, i) where {J,T}
+    @boundscheck checkbounds(A.data, i)
+    @inbounds o = Arrow.unsafe_isnull(A.data, i) ? DataValue{J}() : DataValue{J}(Arrow.unsafe_getvalue(A.data, i))
     o    
 end
 
 Base.IndexStyle(::Type{<:DataValueArrowVector}) = IndexLinear()
 
-Base.eltype(::Type{DataValueArrowVector{J}}) where J = DataValue{J}
+Base.eltype(::Type{DataValueArrowVector{J,T}}) where {J,T} = DataValue{J}
+
+struct MissingDataValueVector{J,T<:AbstractVector{DataValue{J}}} <: AbstractVector{Union{J,Missing}}
+    data::T
+end
+
+Base.size(A::MissingDataValueVector) = size(A.data)
+
+@inline function Base.getindex(A::MissingDataValueVector, i)
+    @inbounds o = isnull(A.data[i]) ? missing : get(A.data[i])
+    o    
+end
+
+Base.IndexStyle(::Type{<:MissingDataValueVector}) = IndexLinear()
+
+Base.eltype(::Type{MissingDataValueVector{J,T}}) where {J,T} = Union{J,Missing}
