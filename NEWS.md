@@ -1,3 +1,6 @@
+# FeatherFiles.jl v0.2.0
+* Move to FeatherLib.jl
+
 # FeatherFiles.jl v0.1.0
 * Move to TableTraits.jl
 
