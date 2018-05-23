@@ -1,3 +1,6 @@
+# FeatherFiles.jl v0.3.0
+* Export load and save
+
 # FeatherFiles.jl v0.2.0
 * Move to FeatherLib.jl
 

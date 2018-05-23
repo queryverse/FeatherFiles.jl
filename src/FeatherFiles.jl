@@ -1,8 +1,10 @@
 module FeatherFiles
 
 using FeatherLib, IteratorInterfaceExtensions, TableTraits, TableTraitsUtils,
-    DataValues, NamedTuples, Arrow, Missings
-import IterableTables, FileIO
+    DataValues, NamedTuples, Arrow, Missings, FileIO
+import IterableTables
+
+export load, save
 
 include("missing-conversion.jl")
 
@@ -10,7 +12,7 @@ struct FeatherFile
     filename::String
 end
 
-function load(f::FileIO.File{FileIO.format"Feather"})
+function fileio_load(f::FileIO.File{FileIO.format"Feather"})
     return FeatherFile(f.filename)
 end
 
@@ -50,7 +52,7 @@ function TableTraits.get_columns_view(file::FeatherFile)
     return T(rs.columns...)
 end
 
-function save(f::FileIO.File{FileIO.format"Feather"}, data)
+function fileio_save(f::FileIO.File{FileIO.format"Feather"}, data)
     isiterabletable(data) || error("Can't write this data to a Feather file.")
 
     columns, colnames = create_columns_from_iterabletable(data)

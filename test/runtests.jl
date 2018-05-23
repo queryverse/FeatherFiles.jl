@@ -1,5 +1,3 @@
-using FileIO
-using TableTraits
 using FeatherFiles
 using NamedTuples
 using DataValues
@@ -22,7 +20,7 @@ try
 
     featherfile = load(output_filename)
 
-    @test isiterable(featherfile) == true
+    @test IteratorInterfaceExtensions.isiterable(featherfile) == true
 finally
     gc()
     gc()

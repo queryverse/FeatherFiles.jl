@@ -22,7 +22,7 @@ Use Pkg.add("FeatherFiles") in Julia to install FeatherFiles and its dependencie
 To read a feather file into a ``DataFrame``, use the following julia code:
 
 ````julia
-using FileIO, FeatherFiles, DataFrames
+using FeatherFiles, DataFrames
 
 df = DataFrame(load("data.feather"))
 ````
@@ -30,7 +30,7 @@ df = DataFrame(load("data.feather"))
 The call to ``load`` returns a ``struct`` that is an [IterableTable.jl](https://github.com/davidanthoff/IterableTables.jl), so it can be passed to any function that can handle iterable tables, i.e. all the sinks in [IterableTable.jl](https://github.com/davidanthoff/IterableTables.jl). Here are some examples of materializing a feather file into data structures that are not a ``DataFrame``:
 
 ````julia
-using FileIO, FeatherFiles, DataTables, IndexedTables, TimeSeries, Temporal, Gadfly
+using FeatherFiles, DataTables, IndexedTables, TimeSeries, Temporal, Gadfly
 
 # Load into a DataTable
 dt = DataTable(load("data.feather"))
@@ -52,7 +52,7 @@ plot(load("data.feather"), x=:a, y=:b, Geom.line)
 
 The following code saves any iterable table as a feather file:
 ````julia
-using FileIO, FeatherFiles
+using FeatherFiles
 
 save("output.feather", it)
 ````
@@ -63,7 +63,7 @@ This will work as long as ``it`` is any of the types supported as sources in [It
 Both ``load`` and ``save`` also support the pipe syntax. For example, to load a feather file into a ``DataFrame``, one can use the following code:
 
 ````julia
-using FileIO, FeatherFiles, DataFrame
+using FeatherFiles, DataFrame
 
 df = load("data.feather") |> DataFrame
 ````
@@ -71,7 +71,7 @@ df = load("data.feather") |> DataFrame
 To save an iterable table, one can use the following form:
 
 ````julia
-using FileIO, FeatherFiles, DataFrame
+using FeatherFiles, DataFrame
 
 df = # Aquire a DataFrame somehow
 
