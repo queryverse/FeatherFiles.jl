@@ -1,7 +1,7 @@
 module FeatherFiles
 
 using FeatherLib, IteratorInterfaceExtensions, TableTraits, TableTraitsUtils,
-    DataValues, NamedTuples, Arrow, Missings, FileIO
+    DataValues, NamedTuples, Arrow, Missings, FileIO, TableShowUtils
 import IterableTables
 
 export load, save
@@ -11,6 +11,17 @@ include("missing-conversion.jl")
 struct FeatherFile
     filename::String
 end
+
+function Base.show(io::IO, source::FeatherFile)
+    TableShowUtils.printtable(io, getiterator(source), "Feather file")
+end
+
+function Base.show(io::IO, ::MIME"text/html", source::FeatherFile)
+    TableShowUtils.printHTMLtable(io, getiterator(source))
+end
+
+Base.Multimedia.mimewritable(::MIME"text/html", source::FeatherFile) = true
+
 
 function fileio_load(f::FileIO.File{FileIO.format"Feather"})
     return FeatherFile(f.filename)
