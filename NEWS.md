@@ -1,3 +1,6 @@
+# FeatherFiles.jl v0.4.0
+* Add show method support
+
 # FeatherFiles.jl v0.3.0
 * Export load and save
 
