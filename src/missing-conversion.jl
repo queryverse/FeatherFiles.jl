@@ -10,6 +10,12 @@ Base.size(A::DataValueArrowVector) = size(A.data)
     o    
 end
 
+@inline function Base.getindex(A::DataValueArrowVector{J,T}, i) where {J,T<:Arrow.DictEncoding{Union{Missing,J}}}
+    @boundscheck checkbounds(A.data, i)
+    @inbounds o = Arrow.unsafe_isnull(A.data, i) ? DataValue{J}() : DataValue{J}(A.data.pool[A.data.refs[i]+1])
+    o    
+end
+
 Base.IndexStyle(::Type{<:DataValueArrowVector}) = IndexLinear()
 
 Base.eltype(::Type{DataValueArrowVector{J,T}}) where {J,T} = DataValue{J}
