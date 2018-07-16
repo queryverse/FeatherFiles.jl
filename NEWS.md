@@ -1,3 +1,6 @@
+# FeatherFiles.jl v0.5.0
+* Drop julia 0.6 support, add julia 0.7 support
+
 # FeatherFiles.jl v0.4.0
 * Add show method support
 * Some bug fixes

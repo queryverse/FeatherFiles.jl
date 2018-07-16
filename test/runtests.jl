@@ -1,13 +1,13 @@
 using FeatherFiles
-using NamedTuples
 using DataValues
-using Base.Test
+using IteratorInterfaceExtensions
+using Test
 
 @testset "FeatherFiles" begin
 
-source = [@NT(Name="John", Age=34., Children=2),
-    @NT(Name="Sally", Age=54., Children=1),
-    @NT(Name="Jim", Age=34., Children=0)]
+source = [(Name="John", Age=34., Children=2),
+    (Name="Sally", Age=54., Children=1),
+    (Name="Jim", Age=34., Children=0)]
 
 output_filename = tempname() * ".feather"
 
@@ -27,13 +27,13 @@ finally
     # rm(output_filename)
 end
 
-source2 = [@NT(Name=DataValue("John"), Age=DataValue(34.), Children=DataValue{Int}()),
-    @NT(Name=DataValue("Sally"), Age=DataValue{Float64}(), Children=DataValue(1)),
-    @NT(Name=DataValue{String}(), Age=DataValue(34.), Children=DataValue(0))]
+source2 = [(Name=DataValue("John"), Age=DataValue(34.), Children=DataValue{Int}()),
+    (Name=DataValue("Sally"), Age=DataValue{Float64}(), Children=DataValue(1)),
+    (Name=DataValue{String}(), Age=DataValue(34.), Children=DataValue(0))]
 
-source2 = [@NT(Age=DataValue(34.), Children=DataValue{Int}()),
-    @NT(Age=DataValue{Float64}(), Children=DataValue(1)),
-    @NT(Age=DataValue(34.), Children=DataValue(0))]
+source2 = [(Age=DataValue(34.), Children=DataValue{Int}()),
+    (Age=DataValue{Float64}(), Children=DataValue(1)),
+    (Age=DataValue(34.), Children=DataValue(0))]
 
 
 output_filename2 = tempname() * ".feather"
