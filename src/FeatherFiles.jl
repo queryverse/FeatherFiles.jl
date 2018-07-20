@@ -1,7 +1,7 @@
 module FeatherFiles
 
 using FeatherLib, IteratorInterfaceExtensions, TableTraits, TableTraitsUtils,
-    DataValues, Arrow, Missings, FileIO, TableShowUtils
+    DataValues, Arrow, FileIO, TableShowUtils
 import IterableTables
 
 export load, save

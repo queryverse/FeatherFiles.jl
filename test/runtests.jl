@@ -22,8 +22,8 @@ try
 
     @test IteratorInterfaceExtensions.isiterable(featherfile) == true
 finally
-    gc()
-    gc()
+    GC.gc()
+    GC.gc()
     # rm(output_filename)
 end
 
@@ -45,8 +45,8 @@ try
 
     @test source2 == sink2
 finally
-    gc()
-    gc()
+    GC.gc()
+    GC.gc()
     # rm(output_filename2)
 end
 
