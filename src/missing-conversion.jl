@@ -27,7 +27,7 @@ end
 Base.size(A::MissingDataValueVector) = size(A.data)
 
 @inline function Base.getindex(A::MissingDataValueVector, i)
-    @inbounds o = isnull(A.data[i]) ? missing : get(A.data[i])
+    @inbounds o = isna(A.data[i]) ? missing : get(A.data[i])
     o    
 end
 
