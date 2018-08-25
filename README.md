@@ -1,15 +1,14 @@
 # FeatherFiles
 
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
-[![Build Status](https://travis-ci.org/davidanthoff/FeatherFiles.jl.svg?branch=master)](https://travis-ci.org/davidanthoff/FeatherFiles.jl)
-[![Build status](https://ci.appveyor.com/api/projects/status/7ungvvmt6q7d9q9p/branch/master?svg=true)](https://ci.appveyor.com/project/davidanthoff/featherfiles-jl/branch/master)
+[![Build Status](https://travis-ci.org/queryverse/FeatherFiles.jl.svg?branch=master)](https://travis-ci.org/queryverse/FeatherFiles.jl)
+[![Build status](https://ci.appveyor.com/api/projects/status/8dbkg1vnew2pihtr/branch/master?svg=true)](https://ci.appveyor.com/project/queryverse/featherfiles-jl/branch/master)
 [![FeatherFiles](http://pkg.julialang.org/badges/FeatherFiles_0.6.svg)](http://pkg.julialang.org/?pkg=FeatherFiles)
-[![codecov.io](http://codecov.io/github/davidanthoff/FeatherFiles.jl/coverage.svg?branch=master)](http://codecov.io/github/davidanthoff/FeatherFiles.jl?branch=master)
+[![codecov.io](http://codecov.io/github/queryverse/FeatherFiles.jl/coverage.svg?branch=master)](http://codecov.io/github/queryverse/FeatherFiles.jl?branch=master)
 
 ## Overview
 
-This package provides load and save support for [Feather files](https://github.com/wesm/feather)
-under the [FileIO.jl](https://github.com/JuliaIO/FileIO.jl) package.
+This package provides load and save support for [Feather files](https://github.com/wesm/feather) under the [FileIO.jl](https://github.com/JuliaIO/FileIO.jl) package.
 
 ## Installation
 
@@ -27,7 +26,7 @@ using FeatherFiles, DataFrames
 df = DataFrame(load("data.feather"))
 ````
 
-The call to ``load`` returns a ``struct`` that is an [IterableTable.jl](https://github.com/davidanthoff/IterableTables.jl), so it can be passed to any function that can handle iterable tables, i.e. all the sinks in [IterableTable.jl](https://github.com/davidanthoff/IterableTables.jl). Here are some examples of materializing a feather file into data structures that are not a ``DataFrame``:
+The call to ``load`` returns a ``struct`` that is an [IterableTable.jl](https://github.com/queryverse/IterableTables.jl), so it can be passed to any function that can handle iterable tables, i.e. all the sinks in [IterableTable.jl](https://github.com/queryverse/IterableTables.jl). Here are some examples of materializing a feather file into data structures that are not a ``DataFrame``:
 
 ````julia
 using FeatherFiles, DataTables, IndexedTables, TimeSeries, Temporal, Gadfly
@@ -56,7 +55,7 @@ using FeatherFiles
 
 save("output.feather", it)
 ````
-This will work as long as ``it`` is any of the types supported as sources in [IterableTables.jl](https://github.com/davidanthoff/IterableTables.jl).
+This will work as long as ``it`` is any of the types supported as sources in [IterableTables.jl](https://github.com/queryverse/IterableTables.jl).
 
 ### Using the pipe syntax
 
@@ -78,4 +77,4 @@ df = # Aquire a DataFrame somehow
 df |> save("output.feather")
 ````
 
-The pipe syntax is especially useful when combining it with [Query.jl](https://github.com/davidanthoff/Query.jl) queries, for example one can easily load a feather file, pipe it into a query, then pipe it to the ``save`` function to store the results in a new file.
+The pipe syntax is especially useful when combining it with [Query.jl](https://github.com/queryverse/Query.jl) queries, for example one can easily load a feather file, pipe it into a query, then pipe it to the ``save`` function to store the results in a new file.
