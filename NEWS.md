@@ -1,3 +1,6 @@
+# FeatherFiles.jl v0.5.1
+* Fix remaining julia 0.7/1.0 compat issues
+
 # FeatherFiles.jl v0.5.0
 * Drop julia 0.6 support, add julia 0.7 support
 
