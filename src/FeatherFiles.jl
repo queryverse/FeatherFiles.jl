@@ -30,6 +30,7 @@ end
 IteratorInterfaceExtensions.isiterable(x::FeatherFile) = true
 TableTraits.isiterabletable(x::FeatherFile) = true
 TableTraits.supports_get_columns_view(x::FeatherFile) = true
+TableTraits.supports_get_columns_copy_using_missing(x::FeatherFile) = true
 
 function IteratorInterfaceExtensions.getiterator(file::FeatherFile)
     rs = featherread(file.filename)
@@ -61,6 +62,11 @@ function TableTraits.get_columns_view(file::FeatherFile)
     T = eval(:(@NT($(Symbol.(rs.names)...)))){typeof.(rs.columns)...}
 
     return T(rs.columns...)
+end
+
+function TableTraits.get_columns_copy_using_missing(file::FeatherFile)
+     rs = featherread(file.filename)
+     return NamedTuple{(Symbol.(rs.names)...,)}(((convert(Vector{eltype(c)}, c) for c in rs.columns)...,))
 end
 
 function fileio_save(f::FileIO.File{FileIO.format"Feather"}, data)
