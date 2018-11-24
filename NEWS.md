@@ -1,3 +1,6 @@
+# FeatherFiles.jl v0.6.0
+* Add support for the get_columns_copy_using_missing interface
+
 # FeatherFiles.jl v0.5.1
 * Fix remaining julia 0.7/1.0 compat issues
 
