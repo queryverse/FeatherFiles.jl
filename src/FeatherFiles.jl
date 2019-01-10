@@ -4,7 +4,7 @@ using FeatherLib, IteratorInterfaceExtensions, TableTraits, TableTraitsUtils,
     DataValues, Arrow, FileIO, TableShowUtils
 import IterableTables
 
-export load, save
+export load, save, File, @format_str
 
 include("missing-conversion.jl")
 

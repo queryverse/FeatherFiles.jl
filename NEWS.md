@@ -1,3 +1,6 @@
+# FeatherFiles.jl v0.7.0
+* Export FileIO.File and FileIO.@format_str
+
 # FeatherFiles.jl v0.6.0
 * Add support for the get_columns_copy_using_missing interface
 
