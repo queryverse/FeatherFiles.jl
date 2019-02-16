@@ -79,6 +79,8 @@ function fileio_save(f::FileIO.File{FileIO.format"Feather"}, data)
 
     columns, colnames = create_columns_from_iterabletable(data)
 
+    columns = Any[c for c in columns]
+
     for i=1:length(columns)
         if eltype(columns[i]) <: DataValue
             T = MissingDataValueVector{eltype(eltype(columns[i])),typeof(columns[i])}
