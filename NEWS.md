@@ -1,3 +1,6 @@
+# FeatherFiles.jl v0.8.1
+* Fix a bug
+
 # FeatherFiles.jl v0.8.0
 * Add support for "application/vnd.dataresource+json" MIME type
 
