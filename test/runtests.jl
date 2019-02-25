@@ -55,4 +55,12 @@ finally
     # rm(output_filename2)
 end
 
+ar = load(output_filename2)
+
+@test sprint((stream,data)->show(stream, "text/html", data), ar) == "<table><thead><tr><th>Name</th><th>Age</th><th>Children</th></tr></thead><tbody><tr><td>&quot;John&quot;</td><td>34.0</td><td>#NA</td></tr><tr><td>&quot;Sally&quot;</td><td>#NA</td><td>1</td></tr><tr><td>#NA</td><td>34.0</td><td>0</td></tr></tbody></table>"
+@test sprint((stream,data)->show(stream, "application/vnd.dataresource+json", data), ar) == "{\"schema\":{\"fields\":[{\"name\":\"Name\",\"type\":\"string\"},{\"name\":\"Age\",\"type\":\"number\"},{\"name\":\"Children\",\"type\":\"integer\"}]},\"data\":[{\"Name\":\"John\",\"Age\":34.0,\"Children\":null},{\"Name\":\"Sally\",\"Age\":null,\"Children\":1},{\"Name\":null,\"Age\":34.0,\"Children\":0}]}"
+@test sprint(show, ar) == "3x3 Feather file\nName    │ Age  │ Children\n────────┼──────┼─────────\n\"John\"  │ 34.0 │ #NA     \n\"Sally\" │ #NA  │ 1       \n#NA     │ 34.0 │ 0       "
+@test showable("text/html", ar) == true
+@test showable("application/vnd.dataresource+json", ar) == true
+
 end
