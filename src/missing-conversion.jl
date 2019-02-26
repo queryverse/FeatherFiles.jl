@@ -1,3 +1,5 @@
+export DataValueArrowVector
+
 struct DataValueArrowVector{J,T<:Arrow.ArrowVector{Union{J,Missing}}} <: AbstractVector{DataValue{J}}
     data::T
 end

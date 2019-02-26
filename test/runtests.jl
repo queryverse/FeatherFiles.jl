@@ -3,6 +3,7 @@ using DataValues
 using IteratorInterfaceExtensions
 using TableTraits
 using Test
+using Arrow
 
 @testset "FeatherFiles" begin
 
@@ -64,3 +65,9 @@ ar = load(output_filename2)
 @test showable("application/vnd.dataresource+json", ar) == true
 
 end
+
+# @testset "Missing Conversion" begin
+
+# vect = DataValueArrowVector([1, 2, 3, 4])
+
+# end
