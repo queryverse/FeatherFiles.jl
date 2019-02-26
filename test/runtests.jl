@@ -68,18 +68,18 @@ end
 
 @testset "Missing Conversion" begin
 
-v1 = DataValueArrowVector(NullablePrimitive([2.0, missing, 5.0, 7.0]))
+v1 = FeatherFiles.DataValueArrowVector(NullablePrimitive([2.0, missing, 5.0, 7.0]))
 @test getindex(v1, 3) == DataValue{Float64}(5.0)
 @test getindex(v1, 2) == DataValue{Float64}()
 @test size(v1) == size(v1.data)
 @test IndexStyle(v1) == IndexLinear()
 
-v2 = DataValueArrowVector(DictEncoding(["fire", "walk", "with", missing, "me"]))
+v2 = FeatherFiles.DataValueArrowVector(DictEncoding(["fire", "walk", "with", missing, "me"]))
 @test getindex(v2, 1) == DataValue{String}("fire")
 @test getindex(v2, 4) == DataValue{String}()
 @test IndexStyle(v2) == IndexLinear()
 
-v3 = MissingDataValueVector([DataValue{Int64}(), DataValue{Int64}(18), DataValue{Int64}(54)])
+v3 = FeatherFiles.MissingDataValueVector([DataValue{Int64}(), DataValue{Int64}(18), DataValue{Int64}(54)])
 @test getindex(v3, 2) == 18
 @test getindex(v3, 1) === missing
 @test IndexStyle(v3) == IndexLinear()

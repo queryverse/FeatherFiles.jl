@@ -34,7 +34,7 @@ end
 
 IteratorInterfaceExtensions.isiterable(x::FeatherFile) = true
 TableTraits.isiterabletable(x::FeatherFile) = true
-TableTraits.supports_get_columns_view(x::FeatherFile) = true
+# TableTraits.supports_get_columns_view(x::FeatherFile) = true
 TableTraits.supports_get_columns_copy_using_missing(x::FeatherFile) = true
 
 function IteratorInterfaceExtensions.getiterator(file::FeatherFile)
@@ -53,21 +53,21 @@ function IteratorInterfaceExtensions.getiterator(file::FeatherFile)
     return it
 end
 
-function TableTraits.get_columns_view(file::FeatherFile)
-    rs = featherread(file.filename)
+# function TableTraits.get_columns_view(file::FeatherFile)
+#     rs = featherread(file.filename)
 
-    for i=1:length(rs.columns)
-        col_eltype = eltype(rs.columns[i])
-        if isa(col_eltype, Union) && col_eltype.b <: Missing
-            T = DataValueArrowVector{col_eltype.a,typeof(rs.columns[i])}
-            rs.columns[i] = T(rs.columns[i])
-        end
-    end
+#     for i=1:length(rs.columns)
+#         col_eltype = eltype(rs.columns[i])
+#         if isa(col_eltype, Union) && col_eltype.b <: Missing
+#             T = DataValueArrowVector{col_eltype.a,typeof(rs.columns[i])}
+#             rs.columns[i] = T(rs.columns[i])
+#         end
+#     end
 
-    T = eval(:(@NT($(Symbol.(rs.names)...)))){typeof.(rs.columns)...}
+#     T = eval(:(@NT($(Symbol.(rs.names)...)))){typeof.(rs.columns)...}
 
-    return T(rs.columns...)
-end
+#     return T(rs.columns...)
+# end
 
 function TableTraits.get_columns_copy_using_missing(file::FeatherFile)
      rs = featherread(file.filename)
