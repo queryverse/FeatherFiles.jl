@@ -66,8 +66,22 @@ ar = load(output_filename2)
 
 end
 
-# @testset "Missing Conversion" begin
+@testset "Missing Conversion" begin
 
-# vect = DataValueArrowVector([1, 2, 3, 4])
+v1 = DataValueArrowVector(NullablePrimitive([2.0, missing, 5.0, 7.0]))
+@test getindex(v1, 3) == DataValue{Float64}(5.0)
+@test getindex(v1, 2) == DataValue{Float64}()
+@test size(v1) == size(v1.data)
+@test IndexStyle(v1) == IndexLinear()
 
-# end
+v2 = DataValueArrowVector(DictEncoding(["fire", "walk", "with", missing, "me"]))
+@test getindex(v2, 1) == DataValue{String}("fire")
+@test getindex(v2, 4) == DataValue{String}()
+@test IndexStyle(v2) == IndexLinear()
+
+v3 = MissingDataValueVector([DataValue{Int64}(), DataValue{Int64}(18), DataValue{Int64}(54)])
+@test getindex(v3, 2) == 18
+@test getindex(v3, 1) === missing
+@test IndexStyle(v3) == IndexLinear()
+
+end
