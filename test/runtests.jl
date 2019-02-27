@@ -23,6 +23,7 @@ try
     featherfile = load(output_filename)
 
     @test IteratorInterfaceExtensions.isiterable(featherfile) == true
+    @test TableTraits.isiterabletable(featherfile) == true
     @test TableTraits.supports_get_columns_copy_using_missing(featherfile) == true
     ff_as_cols = TableTraits.get_columns_copy_using_missing(featherfile)
     @test ff_as_cols == (Name=["John", "Sally", "Jim"], Age=[34., 54., 34.], Children=[2,1,0])
@@ -63,6 +64,16 @@ ar = load(output_filename2)
 @test sprint(show, ar) == "3x3 Feather file\nName    │ Age  │ Children\n────────┼──────┼─────────\n\"John\"  │ 34.0 │ #NA     \n\"Sally\" │ #NA  │ 1       \n#NA     │ 34.0 │ 0       "
 @test showable("text/html", ar) == true
 @test showable("application/vnd.dataresource+json", ar) == true
+
+# source3 = [(Name="Toyota", Electric=false, Origin="Japan"),
+# (Name=2.0, Electric=true, Origin=missing),
+# (Name="Tesla", Electric=true, Origin="USA")]
+
+# output_filename3 = tempname() * ".feather"
+
+# source3 |> save(output_filename3)
+
+# test IteratorInterfaceExtensions.getiterator FIXME
 
 end
 

@@ -20,13 +20,13 @@ function Base.show(io::IO, ::MIME"text/html", source::FeatherFile)
     TableShowUtils.printHTMLtable(io, getiterator(source))
 end
 
-Base.Multimedia.showable(::MIME"text/html", source::FeatherFile) = true
+Base.showable(::MIME"text/html", source::FeatherFile) = true
 
 function Base.show(io::IO, ::MIME"application/vnd.dataresource+json", source::FeatherFile)
     TableShowUtils.printdataresource(io, getiterator(source))
 end
 
-Base.Multimedia.showable(::MIME"application/vnd.dataresource+json", source::FeatherFile) = true
+Base.showable(::MIME"application/vnd.dataresource+json", source::FeatherFile) = true
 
 function fileio_load(f::FileIO.File{FileIO.format"Feather"})
     return FeatherFile(f.filename)
