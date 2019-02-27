@@ -4,6 +4,7 @@ using IteratorInterfaceExtensions
 using TableTraits
 using Test
 using Arrow
+using QueryTables
 
 @testset "FeatherFiles" begin
 
@@ -65,15 +66,15 @@ ar = load(output_filename2)
 @test showable("text/html", ar) == true
 @test showable("application/vnd.dataresource+json", ar) == true
 
-# source3 = [(Name="Toyota", Electric=false, Origin="Japan"),
-# (Name=2.0, Electric=true, Origin=missing),
-# (Name="Tesla", Electric=true, Origin="USA")]
+source3 = DataTable(a=[1,2,NA], b=[3,4,5])
 
-# output_filename3 = tempname() * ".feather"
+output_filename3 = tempname() * ".feather"
 
-# source3 |> save(output_filename3)
+source3 |> save(output_filename3)
 
-# test IteratorInterfaceExtensions.getiterator FIXME
+ar = load(output_filename3)
+
+@test sprint(show, ar) == "3x2 Feather file\na   │ b\n────┼──\n1   │ 3\n2   │ 4\n#NA │ 5"
 
 end
 
