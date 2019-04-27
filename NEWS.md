@@ -1,3 +1,6 @@
+# FeatherFiles.jl v1.0.0
+* Migrate to Project.toml
+
 # FeatherFiles.jl v0.8.1
 * Fix a bug
 
