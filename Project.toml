@@ -1,6 +1,6 @@
 name = "FeatherFiles"
 uuid = "b675d258-116a-5741-b937-b79f054b0542"
-version = "1.0.0-DEV"
+version = "0.8.2-DEV"
 
 [deps]
 Arrow = "69666777-d1a9-59fb-9406-91d4454c9d45"
