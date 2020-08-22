@@ -40,7 +40,7 @@ TableTraits.supports_get_columns_copy_using_missing(x::FeatherFile) = true
 function IteratorInterfaceExtensions.getiterator(file::FeatherFile)
     rs = featherread(file.filename)
 
-    for i=1:length(rs.columns)
+    for i = 1:length(rs.columns)
         col_eltype = eltype(rs.columns[i])
         if isa(col_eltype, Union) && col_eltype.b <: Missing
             T = DataValueArrowVector{col_eltype.a,typeof(rs.columns[i])}
@@ -70,8 +70,8 @@ end
 # end
 
 function TableTraits.get_columns_copy_using_missing(file::FeatherFile)
-     rs = featherread(file.filename)
-     return NamedTuple{(Symbol.(rs.names)...,)}(((convert(Vector{eltype(c)}, c) for c in rs.columns)...,))
+    rs = featherread(file.filename)
+    return NamedTuple{(Symbol.(rs.names)...,)}(((convert(Vector{eltype(c)}, c) for c in rs.columns)...,))
 end
 
 function fileio_save(f::FileIO.File{FileIO.format"Feather"}, data)
@@ -81,7 +81,7 @@ function fileio_save(f::FileIO.File{FileIO.format"Feather"}, data)
 
     columns = Any[c for c in columns]
 
-    for i=1:length(columns)
+    for i = 1:length(columns)
         if eltype(columns[i]) <: DataValue
             T = MissingDataValueVector{eltype(eltype(columns[i])),typeof(columns[i])}
             columns[i] = T(columns[i])

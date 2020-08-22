@@ -1,4 +1,4 @@
-struct DataValueArrowVector{J,T<:Arrow.ArrowVector{Union{J,Missing}}} <: AbstractVector{DataValue{J}}
+struct DataValueArrowVector{J,T <: Arrow.ArrowVector{Union{J,Missing}}} <: AbstractVector{DataValue{J}}
     data::T
 end
 
@@ -10,9 +10,9 @@ Base.size(A::DataValueArrowVector) = size(A.data)
     o    
 end
 
-@inline function Base.getindex(A::DataValueArrowVector{J,T}, i) where {J,T<:Arrow.DictEncoding{Union{Missing,J}}}
+@inline function Base.getindex(A::DataValueArrowVector{J,T}, i) where {J,T <: Arrow.DictEncoding{Union{Missing,J}}}
     @boundscheck checkbounds(A.data, i)
-    @inbounds o = Arrow.unsafe_isnull(A.data, i) ? DataValue{J}() : DataValue{J}(A.data.pool[A.data.refs[i]+1])
+    @inbounds o = Arrow.unsafe_isnull(A.data, i) ? DataValue{J}() : DataValue{J}(A.data.pool[A.data.refs[i] + 1])
     o    
 end
 
@@ -20,7 +20,7 @@ Base.IndexStyle(::Type{<:DataValueArrowVector}) = IndexLinear()
 
 Base.eltype(::Type{DataValueArrowVector{J,T}}) where {J,T} = DataValue{J}
 
-struct MissingDataValueVector{J,T<:AbstractVector{DataValue{J}}} <: AbstractVector{Union{J,Missing}}
+struct MissingDataValueVector{J,T <: AbstractVector{DataValue{J}}} <: AbstractVector{Union{J,Missing}}
     data::T
 end
 
