@@ -1,6 +1,6 @@
 name = "FeatherFiles"
 uuid = "b675d258-116a-5741-b937-b79f054b0542"
-version = "0.9.0-DEV"
+version = "1.0.0-DEV"
 
 [deps]
 Arrow = "69666777-d1a9-59fb-9406-91d4454c9d45"
@@ -15,12 +15,12 @@ TableTraitsUtils = "382cd787-c1b6-5bf2-a167-d5b971a19bda"
 
 [compat]
 Arrow = "0.2.1 - 0.4"
-DataValues = "0.4.4, 0.5"
-FeatherLib = "0.1.1, 0.2, 0.3"
+DataValues = "0.4.4, 0.5, 1"
+FeatherLib = "0.1.1, 0.2, 0.3, 1"
 FileIO = "1"
 IterableTables = "0.8.3, 0.9, 0.10, 0.11, 1"
 IteratorInterfaceExtensions = "0.1.1, 1"
-TableShowUtils = "0.1.1, 0.2, 0.3"
+TableShowUtils = "0.1.1, 0.2, 0.3, 1"
 TableTraits = "0.4, 1"
 TableTraitsUtils = "0.2.1, 0.3, 0.4, 1"
 julia = "1.12"
