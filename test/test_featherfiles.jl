@@ -25,6 +25,14 @@
         ff_as_cols = TableTraits.get_columns_copy_using_missing(featherfile)
         @test ff_as_cols == (Name=["John", "Sally", "Jim"], Age=[34., 54., 34.], Children=[2,1,0])
     finally
+        # This rm stays commented out, and close! does not change that. The culprit is the
+        # lazy getiterator call above: its rows read straight through the memory mapping,
+        # so nothing may release it while the iterator is alive, and afterwards only the
+        # GC can. It is the mapping from *that* call, not from
+        # get_columns_copy_using_missing, that still holds the file on Windows.
+        # The deterministic half is covered by the dedicated testitem
+        # "get_columns_copy_using_missing releases the file" below, which does rm without
+        # a GC.
         GC.gc()
         GC.gc()
         # rm(output_filename)
@@ -75,7 +83,7 @@ end
 
 @testitem "Missing Conversion" begin
     using DataValues
-    using Arrow
+    using FeatherLib.ArrowCompat: NullablePrimitive, DictEncoding
 
     v1 = FeatherFiles.DataValueArrowVector(NullablePrimitive([2.0, missing, 5.0, 7.0]))
     @test getindex(v1, 3) == DataValue{Float64}(5.0)
@@ -92,4 +100,103 @@ end
     @test getindex(v3, 2) == 18
     @test getindex(v3, 1) === missing
     @test IndexStyle(v3) == IndexLinear()
+end
+
+@testitem "Date and time columns" begin
+    using Dates
+    using DataValues
+    using IteratorInterfaceExtensions
+    using TableTraits
+    using FeatherLib: featherwrite
+
+    # Feather stores these as the Arrow wire types Datestamp, Timestamp and TimeOfDay.
+    # Users should never see those: FeatherLib deliberately hands them out as-is, and
+    # FeatherFiles is the layer that unwraps them.
+    filename = tempname() * ".feather"
+    featherwrite(filename,
+                 Any[[Date(2020, 1, 2), Date(2021, 3, 4)],
+                     [DateTime(2020, 1, 2, 3, 4, 5), DateTime(2021, 3, 4, 5, 6, 7)],
+                     [Time(1, 2, 3), Time(4, 5, 6)],
+                     [1, 2]],
+                 [:d, :dt, :t, :n])
+
+    rows = collect(IteratorInterfaceExtensions.getiterator(load(filename)))
+    @test typeof(rows[1].d) == Date
+    @test rows[1].d == Date(2020, 1, 2)
+    @test typeof(rows[1].dt) == DateTime
+    @test rows[1].dt == DateTime(2020, 1, 2, 3, 4, 5)
+    @test typeof(rows[1].t) == Time
+    @test rows[1].t == Time(1, 2, 3)
+    # Int, not Int64: the column was written as [1, 2], whose eltype is Int, and that is
+    # Int32 on the 32-bit CI legs.
+    @test typeof(rows[1].n) == Int        # non-temporal columns untouched
+
+    cols = TableTraits.get_columns_copy_using_missing(load(filename))
+    @test eltype(cols.d) == Date
+    @test cols.d == [Date(2020, 1, 2), Date(2021, 3, 4)]
+    @test eltype(cols.dt) == DateTime
+    @test eltype(cols.t) == Time
+
+    GC.gc(); GC.gc()
+    rm(filename)
+end
+
+@testitem "Nullable date columns" begin
+    using Dates
+    using DataValues
+    using IteratorInterfaceExtensions
+    using TableTraits
+    using FeatherLib: featherwrite
+
+    filename = tempname() * ".feather"
+    featherwrite(filename, Any[Union{Date,Missing}[Date(2020, 1, 2), missing, Date(2021, 3, 4)]], [:d])
+
+    # Julia does not order Union members predictably: for Union{Datestamp,Missing} the
+    # non-Missing half is `.a`, so the old `col_eltype.b <: Missing` test silently skipped
+    # these columns and they came back unwrapped.
+    rows = collect(IteratorInterfaceExtensions.getiterator(load(filename)))
+    @test typeof(rows[1].d) == DataValue{Date}
+    @test get(rows[1].d) == Date(2020, 1, 2)
+    @test isna(rows[2].d)
+
+    cols = TableTraits.get_columns_copy_using_missing(load(filename))
+    @test eltype(cols.d) == Union{Date,Missing}
+    @test isequal(cols.d, [Date(2020, 1, 2), missing, Date(2021, 3, 4)])
+
+    GC.gc(); GC.gc()
+    rm(filename)
+end
+
+@testitem "get_columns_copy_using_missing releases the file" begin
+    using TableTraits
+
+    # Every column is copied out, so the ResultSet is closed before returning and the
+    # file is immediately deletable -- no GC needed, which matters on Windows.
+    filename = tempname() * ".feather"
+    [(a=1, b=2), (a=3, b=4)] |> save(filename)
+
+    TableTraits.get_columns_copy_using_missing(load(filename))
+
+    @test (rm(filename); !isfile(filename))
+end
+
+@testitem "show releases the file" begin
+    # Displaying a feather file used to leave it memory mapped, so on Windows it stayed
+    # locked against deletion until the GC happened to run. Each rm below is done with no
+    # GC.gc() at all, which is the whole point.
+    filename = tempname() * ".feather"
+    [(a=1, b="x"), (a=2, b="y")] |> save(filename)
+
+    sprint(show, load(filename))
+    @test (rm(filename); !isfile(filename))
+
+    filename2 = tempname() * ".feather"
+    [(a=1, b="x"), (a=2, b="y")] |> save(filename2)
+    sprint(io -> show(io, MIME"text/html"(), load(filename2)))
+    @test (rm(filename2); !isfile(filename2))
+
+    filename3 = tempname() * ".feather"
+    [(a=1, b="x"), (a=2, b="y")] |> save(filename3)
+    sprint(io -> show(io, MIME"application/vnd.dataresource+json"(), load(filename3)))
+    @test (rm(filename3); !isfile(filename3))
 end

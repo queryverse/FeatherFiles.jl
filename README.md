@@ -6,7 +6,17 @@
 
 ## Overview
 
-This package provides load and save support for [Feather files](https://github.com/wesm/feather) under the [FileIO.jl](https://github.com/JuliaIO/FileIO.jl) package.
+This package provides load and save support for **Feather V1** files (the original `FEA1` format from [wesm/feather](https://github.com/wesm/feather)) under the [FileIO.jl](https://github.com/JuliaIO/FileIO.jl) package.
+
+### Feather V1 vs V2
+
+Feather V1 is not the same format as Feather V2. V2 is exactly the Arrow IPC file format on disk, and is what every current tool writes — pyarrow, the R `arrow` package, pandas and Polars — regardless of whether the file is named `.feather` or `.arrow`. Apache has deprecated reading and writing V1 as of Arrow 25.0.0 and plans to remove it.
+
+This package handles V1 only. It cannot read a V2 file, so in practice it is useful for archives rather than for files produced today; use [Arrow.jl](https://github.com/apache/arrow-julia) for those. Both formats carry magic bytes (`FEA1` and `ARROW1`), so FileIO identifies which one a given file actually is regardless of its extension.
+
+### Dates and times
+
+Feather stores dates and times using the Arrow wire types `Datestamp`, `Timestamp` and `TimeOfDay`. FeatherFiles unwraps these, so date columns arrive as `Date`, `DateTime` and `Time` rather than as FeatherLib internals. (`FeatherLib.featherread` deliberately hands out the raw types: it is a faithful low-level mirror of the file.)
 
 ## Installation
 
