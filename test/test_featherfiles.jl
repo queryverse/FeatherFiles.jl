@@ -177,3 +177,24 @@ end
 
     @test (rm(filename); !isfile(filename))
 end
+
+@testitem "show releases the file" begin
+    # Displaying a feather file used to leave it memory mapped, so on Windows it stayed
+    # locked against deletion until the GC happened to run. Each rm below is done with no
+    # GC.gc() at all, which is the whole point.
+    filename = tempname() * ".feather"
+    [(a=1, b="x"), (a=2, b="y")] |> save(filename)
+
+    sprint(show, load(filename))
+    @test (rm(filename); !isfile(filename))
+
+    filename2 = tempname() * ".feather"
+    [(a=1, b="x"), (a=2, b="y")] |> save(filename2)
+    sprint(io -> show(io, MIME"text/html"(), load(filename2)))
+    @test (rm(filename2); !isfile(filename2))
+
+    filename3 = tempname() * ".feather"
+    [(a=1, b="x"), (a=2, b="y")] |> save(filename3)
+    sprint(io -> show(io, MIME"application/vnd.dataresource+json"(), load(filename3)))
+    @test (rm(filename3); !isfile(filename3))
+end

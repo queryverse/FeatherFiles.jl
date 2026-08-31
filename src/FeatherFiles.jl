@@ -13,18 +13,31 @@ struct FeatherFile
     filename::String
 end
 
+# Displaying a file should not leave it memory mapped. Unlike getiterator, which hands the
+# iterator to the caller, the show methods consume every row they need and return, so the
+# ResultSet they opened can be closed straight away -- otherwise merely displaying a
+# feather file keeps it locked against deletion on Windows until the GC runs.
+function withtable(f, source::FeatherFile)
+    rs = read_converted(source.filename)
+    try
+        return f(create_tableiterator(rs.columns, rs.names))
+    finally
+        close!(rs)
+    end
+end
+
 function Base.show(io::IO, source::FeatherFile)
-    TableShowUtils.printtable(io, getiterator(source), "Feather file")
+    withtable(it -> TableShowUtils.printtable(io, it, "Feather file"), source)
 end
 
 function Base.show(io::IO, ::MIME"text/html", source::FeatherFile)
-    TableShowUtils.printHTMLtable(io, getiterator(source))
+    withtable(it -> TableShowUtils.printHTMLtable(io, it), source)
 end
 
 Base.showable(::MIME"text/html", source::FeatherFile) = true
 
 function Base.show(io::IO, ::MIME"application/vnd.dataresource+json", source::FeatherFile)
-    TableShowUtils.printdataresource(io, getiterator(source))
+    withtable(it -> TableShowUtils.printdataresource(io, it), source)
 end
 
 Base.showable(::MIME"application/vnd.dataresource+json", source::FeatherFile) = true
@@ -38,8 +51,10 @@ TableTraits.isiterabletable(x::FeatherFile) = true
 # TableTraits.supports_get_columns_view(x::FeatherFile) = true
 TableTraits.supports_get_columns_copy_using_missing(x::FeatherFile) = true
 
-function IteratorInterfaceExtensions.getiterator(file::FeatherFile)
-    rs = featherread(file.filename)
+# Read a feather file and put its columns into the form the Queryverse surface expects:
+# nullable columns as DataValue, and the Arrow date/time wire types as Date/DateTime/Time.
+function read_converted(filename::AbstractString)
+    rs = featherread(filename)
 
     for i=1:length(rs.columns)
         col_eltype = eltype(rs.columns[i])
@@ -55,11 +70,16 @@ function IteratorInterfaceExtensions.getiterator(file::FeatherFile)
         rs.columns[i] = converttimes(rs.columns[i])
     end
 
-    it = create_tableiterator(rs.columns, rs.names)
+    return rs
+end
+
+function IteratorInterfaceExtensions.getiterator(file::FeatherFile)
+    rs = read_converted(file.filename)
 
     # No close! here: the columns are read lazily, so the iterator needs the file to stay
-    # mapped for as long as it is alive.
-    return it
+    # mapped for as long as it is alive. Callers who want the file released should use
+    # get_columns_copy_using_missing, which copies and then closes.
+    return create_tableiterator(rs.columns, rs.names)
 end
 
 # function TableTraits.get_columns_view(file::FeatherFile)
