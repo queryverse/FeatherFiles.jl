@@ -1,7 +1,7 @@
 module FeatherFiles
 
 using FeatherLib, IteratorInterfaceExtensions, TableTraits, TableTraitsUtils,
-    DataValues, FileIO, TableShowUtils
+    DataValues, FileIO, TableShowUtils, Dates
 using FeatherLib: ArrowCompat
 import IterableTables
 
@@ -43,14 +43,22 @@ function IteratorInterfaceExtensions.getiterator(file::FeatherFile)
 
     for i=1:length(rs.columns)
         col_eltype = eltype(rs.columns[i])
-        if isa(col_eltype, Union) && col_eltype.b <: Missing
-            T = DataValueArrowVector{col_eltype.a,typeof(rs.columns[i])}
+        # Julia does not order the members of a Union predictably, so pick the
+        # non-Missing half by name rather than assuming it is the second field. It is
+        # `.a` for Union{Datestamp,Missing}, which is why date columns were previously
+        # left unwrapped.
+        if isa(col_eltype, Union) && Missing <: col_eltype
+            J = Base.nonmissingtype(col_eltype)
+            T = DataValueArrowVector{J,typeof(rs.columns[i])}
             rs.columns[i] = T(rs.columns[i])
         end
+        rs.columns[i] = converttimes(rs.columns[i])
     end
 
     it = create_tableiterator(rs.columns, rs.names)
 
+    # No close! here: the columns are read lazily, so the iterator needs the file to stay
+    # mapped for as long as it is alive.
     return it
 end
 
@@ -71,8 +79,15 @@ end
 # end
 
 function TableTraits.get_columns_copy_using_missing(file::FeatherFile)
-     rs = featherread(file.filename)
-     return NamedTuple{(Symbol.(rs.names)...,)}(((convert(Vector{eltype(c)}, c) for c in rs.columns)...,))
+    rs = featherread(file.filename)
+    try
+        columns = [converttimes(c) for c in rs.columns]
+        return NamedTuple{(Symbol.(rs.names)...,)}(((convert(Vector{eltype(c)}, c) for c in columns)...,))
+    finally
+        # Every column has been copied out, so the mapping can go. Without this the file
+        # stays locked against deletion on Windows until the ResultSet is collected.
+        close!(rs)
+    end
 end
 
 function fileio_save(f::FileIO.File{FileIO.format"Feather"}, data)

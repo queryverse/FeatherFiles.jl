@@ -14,6 +14,10 @@ Feather V1 is not the same format as Feather V2. V2 is exactly the Arrow IPC fil
 
 This package handles V1 only. It cannot read a V2 file, so in practice it is useful for archives rather than for files produced today; use [Arrow.jl](https://github.com/apache/arrow-julia) for those. Both formats carry magic bytes (`FEA1` and `ARROW1`), so FileIO identifies which one a given file actually is regardless of its extension.
 
+### Dates and times
+
+Feather stores dates and times using the Arrow wire types `Datestamp`, `Timestamp` and `TimeOfDay`. FeatherFiles unwraps these, so date columns arrive as `Date`, `DateTime` and `Time` rather than as FeatherLib internals. (`FeatherLib.featherread` deliberately hands out the raw types: it is a faithful low-level mirror of the file.)
+
 ## Installation
 
 Use Pkg.add("FeatherFiles") in Julia to install FeatherFiles and its dependencies.
