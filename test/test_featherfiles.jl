@@ -75,7 +75,7 @@ end
 
 @testitem "Missing Conversion" begin
     using DataValues
-    using Arrow
+    using FeatherLib.ArrowCompat: NullablePrimitive, DictEncoding
 
     v1 = FeatherFiles.DataValueArrowVector(NullablePrimitive([2.0, missing, 5.0, 7.0]))
     @test getindex(v1, 3) == DataValue{Float64}(5.0)

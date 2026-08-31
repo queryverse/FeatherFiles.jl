@@ -1,4 +1,4 @@
-struct DataValueArrowVector{J,T<:Arrow.ArrowVector{Union{J,Missing}}} <: AbstractVector{DataValue{J}}
+struct DataValueArrowVector{J,T<:ArrowCompat.ArrowVector{Union{J,Missing}}} <: AbstractVector{DataValue{J}}
     data::T
 end
 
@@ -6,13 +6,13 @@ Base.size(A::DataValueArrowVector) = size(A.data)
 
 @inline function Base.getindex(A::DataValueArrowVector{J,T}, i) where {J,T}
     @boundscheck checkbounds(A.data, i)
-    @inbounds o = Arrow.unsafe_isnull(A.data, i) ? DataValue{J}() : DataValue{J}(Arrow.unsafe_getvalue(A.data, i))
+    @inbounds o = ArrowCompat.unsafe_isnull(A.data, i) ? DataValue{J}() : DataValue{J}(ArrowCompat.unsafe_getvalue(A.data, i))
     o    
 end
 
-@inline function Base.getindex(A::DataValueArrowVector{J,T}, i) where {J,T<:Arrow.DictEncoding{Union{Missing,J}}}
+@inline function Base.getindex(A::DataValueArrowVector{J,T}, i) where {J,T<:ArrowCompat.DictEncoding{Union{Missing,J}}}
     @boundscheck checkbounds(A.data, i)
-    @inbounds o = Arrow.unsafe_isnull(A.data, i) ? DataValue{J}() : DataValue{J}(A.data.pool[A.data.refs[i]+1])
+    @inbounds o = ArrowCompat.unsafe_isnull(A.data, i) ? DataValue{J}() : DataValue{J}(A.data.pool[A.data.refs[i]+1])
     o    
 end
 
