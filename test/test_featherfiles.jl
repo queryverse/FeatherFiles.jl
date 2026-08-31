@@ -127,7 +127,9 @@ end
     @test rows[1].dt == DateTime(2020, 1, 2, 3, 4, 5)
     @test typeof(rows[1].t) == Time
     @test rows[1].t == Time(1, 2, 3)
-    @test typeof(rows[1].n) == Int64      # non-temporal columns untouched
+    # Int, not Int64: the column was written as [1, 2], whose eltype is Int, and that is
+    # Int32 on the 32-bit CI legs.
+    @test typeof(rows[1].n) == Int        # non-temporal columns untouched
 
     cols = TableTraits.get_columns_copy_using_missing(load(filename))
     @test eltype(cols.d) == Date
