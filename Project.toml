@@ -1,17 +1,17 @@
 name = "FeatherFiles"
 uuid = "b675d258-116a-5741-b937-b79f054b0542"
-version = "1.0.0"
+version = "1.0.1-DEV"
 
 [deps]
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
-TableTraits = "3783bdb8-4a98-5b6b-af9a-565f29a5fe9c"
-FeatherLib = "409f5150-fb84-534f-94db-80d1e10f57e1"
 TableTraitsUtils = "382cd787-c1b6-5bf2-a167-d5b971a19bda"
+FeatherLib = "409f5150-fb84-534f-94db-80d1e10f57e1"
+IterableTables = "1c8ee90f-4401-5389-894e-7a04a3dc0f4d"
 TableShowUtils = "5e66a065-1f0a-5976-b372-e0b8c017ca10"
 DataValues = "e7dc6d0d-1eca-5fa6-8ad6-5aecde8b7ea5"
 IteratorInterfaceExtensions = "82899510-4779-5014-852e-03e436cf321d"
-IterableTables = "1c8ee90f-4401-5389-894e-7a04a3dc0f4d"
+TableTraits = "3783bdb8-4a98-5b6b-af9a-565f29a5fe9c"
 
 [extras]
 TestItemRunner = "f8b46487-2199-4994-9208-9a1283c18c0a"
@@ -20,14 +20,14 @@ QueryTables = "30ad73d7-305e-5999-88c2-a7d9e8945169"
 
 [compat]
 FileIO = "1"
-TableTraits = "0.4, 1"
 TableTraitsUtils = "0.2.1, 0.3, 0.4, 1"
-FeatherLib = "1"
 julia = "1.10"
+FeatherLib = "1"
+IterableTables = "0.8.3, 0.9, 0.10, 0.11, 1"
 TableShowUtils = "0.1.1, 0.2, 0.3, 1"
 DataValues = "0.4.4, 0.5, 1"
 IteratorInterfaceExtensions = "0.1.1, 1"
-IterableTables = "0.8.3, 0.9, 0.10, 0.11, 1"
+TableTraits = "0.4, 1"
 
 [targets]
 test = ["Test", "QueryTables", "TestItemRunner"]
