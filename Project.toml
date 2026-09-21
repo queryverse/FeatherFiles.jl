@@ -19,6 +19,7 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 QueryTables = "30ad73d7-305e-5999-88c2-a7d9e8945169"
 
 [compat]
+Dates = "1.10"
 FileIO = "1"
 TableTraitsUtils = "0.2.1, 0.3, 0.4, 1"
 julia = "1.10"
